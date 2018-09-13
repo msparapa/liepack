@@ -1,1 +1,1 @@
-from .liepack import (Adjoint, commutator, dexpinv, exp)
+from .liepack import (Adjoint, commutator, dexpinv, exp, killing)

@@ -1,6 +1,7 @@
 import abc
 import copy
 import numpy as np
+
 from liepack.utils import keyboard
 from random import uniform
 
@@ -91,6 +92,22 @@ class LieAlgebra(np.ndarray):
         """
         return int(self.shape[0])
 
+    def killing_form(self):
+        r"""
+        Returns the Killing form for the Lie algebra.
+
+        :return: Killing form.
+        """
+        from liepack import killing
+        basis = self.basis()
+        L = len(basis)
+        mat = np.zeros((L,L))
+        for ii in range(L):
+            for jj in range(L):
+                mat[ii,jj] = killing(basis[ii], basis[jj])
+
+        return mat
+
     @abc.abstractmethod
     def set_vector(self, vector):
         r"""
@@ -138,7 +155,7 @@ class rn(LieAlgebra):
         return int(n-1)
 
     def get_vector(self):
-        return np.array(self.data[:-1,-1])
+        return np.array(self[:-1,-1])
 
     def set_vector(self, vector):
         vector = np.array(vector, dtype=np.float64)
@@ -245,9 +262,9 @@ class sp(LieAlgebra):
         s = int(d/2)
         k = 0
         out = np.zeros(self.get_dimension())
-        A = self.data[:s,:s]
-        B = self.data[:s, s:2*s]
-        C = self.data[s:2*s, :s]
+        A = self[:s,:s]
+        B = self[:s, s:2*s]
+        C = self[s:2*s, :s]
         for ii in range(s):
             for jj in range(s):
                 out[k] = A[ii, jj]

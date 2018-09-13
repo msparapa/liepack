@@ -174,6 +174,26 @@ def exp(g):
         return scipyexpm(g)
 
 
+def killing(g,h):
+    r"""
+    Determine the Killing coefficient between two elements in a Lie algebra.
+
+    :param g: Lie algebra element.
+    :param h: Lie algebra element.
+    :return: Killing coefficient.
+    """
+    if type(g) != type(h):
+        raise TypeError("Lie algebra elements must be of the same type.")
+
+    basis = g.basis()
+    def adg(H): return commutator(g, H)
+    def adh(G): return commutator(h, G)
+
+    k = 0
+    for ii in range(len(basis)):
+        k += adg(adh(basis[ii])).get_vector()[ii]
+    return k
+
 # TODO: Make homogeneous spaces better and move the actions below to them
 # def Left(G, M):
 #     r"""
