@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# This script will automatically run coverage and regenerate the badge
+# This required `coverage` and `coverage_badge`, which are not included in the `liepack` setup
+
+# Move up 1 level. This file is currently in liepack/bin
+cd ..
+
+# Run pytest but only for files in liepack/ since we don't want to include full examples
+coverage run -m pytest beluga/
+
+# Display the report to the command window
+coverage report -m
+
+# Output an html version as well
+coverage html -i
+
+# Save the badge
+coverage-badge -f -o coverage.svg
