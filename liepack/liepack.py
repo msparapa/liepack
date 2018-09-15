@@ -1,5 +1,5 @@
-from liepack.liealgebras import *
-from liepack.liegroups import *
+from .liealgebras import *
+from .liegroups import *
 # from liepack.hspaces import *
 
 from scipy.linalg import expm as scipyexpm
@@ -55,7 +55,7 @@ def Adjoint(G, h):
     :param h: A Lie algebra element.
     :return: :math:`\text{Ad}_g(h)`
     """
-    return G @ h @ np.linalg.inv(G)
+    return np.dot(np.dot(G, h), np.linalg.inv(G))
 
 
 def commutator(g, h, **kwargs):
@@ -102,7 +102,7 @@ def commutator(g, h, **kwargs):
     True
     """
     anticommutator = kwargs.get('anticommutator', 1)
-    return g @ h - anticommutator * h @ g
+    return np.dot(g, h) - anticommutator * np.dot(h, g)
 
 def dexpinv(g, h, order=5):
     r"""

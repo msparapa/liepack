@@ -9,9 +9,11 @@ dir_setup = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(dir_setup, 'liepack', 'release.py')) as f:
     exec(f.read())
 
-modules = ['liepack.liealgebras']
+modules = ['liepack.liealgebras',
+           'liepack.liegroups']
 
-tests = ['liepack.liealgebras.tests']
+tests = ['liepack.liealgebras.tests',
+         'liepack.liegroups.tests']
 
 setup(
     name='liepack',

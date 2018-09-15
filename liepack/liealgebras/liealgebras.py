@@ -186,7 +186,7 @@ class so(LieAlgebra):
     """
     abelian = False
 
-    def get_dimension(self) -> int:
+    def get_dimension(self):
         n = self.get_shape()
         return int(n*(n-1)/2)
 
@@ -253,7 +253,7 @@ class sp(LieAlgebra):
 
         return obj
 
-    def get_dimension(self) -> int:
+    def get_dimension(self):
         shape = self.get_shape()
         return int(shape * (shape + 1)/2)
 
