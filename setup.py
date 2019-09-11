@@ -17,7 +17,9 @@ modules = ['liepack.domain',
            'liepack.domain.liealgebras',
            'liepack.domain.liegroups',
            'liepack.field',
-           'liepack.field']
+           'liepack.field',
+           'liepack.flow',
+           'liepack.flow.methods']
 
 tests = ['liepack.tests',
          'liepack.domain.liealgebras.tests',
@@ -35,7 +37,7 @@ setup(
     packages=['liepack'] + modules + tests,
     py_modules=['liepack'],
     python_requires='>2.7,!=3.0,!=3.1,!=3.2,!=3.3',
-    classifiers=(
+    classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
@@ -50,6 +52,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
-        'Topic :: Scientific/Engineering :: Physics'),
+        'Topic :: Scientific/Engineering :: Physics'],
     install_requires=requirements,
 )
