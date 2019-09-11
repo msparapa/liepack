@@ -2,8 +2,8 @@ import abc
 import copy
 import numpy as np
 
-from liepack.utils import keyboard
 from random import uniform
+
 
 class LieAlgebra(np.ndarray):
     """
@@ -30,7 +30,7 @@ class LieAlgebra(np.ndarray):
             elif isinstance(args[1], list):
                 for ii in range(len(args[1])):
                     for jj in range(len(args[1])):
-                        obj[ii,jj] = args[1][ii][jj]
+                        obj[ii, jj] = args[1][ii][jj]
         else:
             np.copyto(obj, np.zeros(obj.shape))
 
@@ -92,19 +92,28 @@ class LieAlgebra(np.ndarray):
         """
         return int(self.shape[0])
 
+    @abc.abstractmethod
+    def get_vector(self):
+        r"""
+        Take's a Lie algebra's matrix representation and returns its vector representation.
+
+        :return: vector A :math:`1 \times n`-dimensional vector.
+        """
+        raise NotImplementedError
+
     def killing_form(self):
         r"""
         Returns the Killing form for the Lie algebra.
 
         :return: Killing form.
         """
-        from liepack import killing
+        from beluga.liepack import killing
         basis = self.basis()
         L = len(basis)
-        mat = np.zeros((L,L))
+        mat = np.zeros((L, L))
         for ii in range(L):
             for jj in range(L):
-                mat[ii,jj] = killing(basis[ii], basis[jj])
+                mat[ii, jj] = killing(basis[ii], basis[jj])
 
         return mat
 
@@ -121,7 +130,7 @@ class LieAlgebra(np.ndarray):
         r"""
         Initializes a random element in the Lie algebra.
         """
-        v = [uniform(0,1) for _ in range(self.get_dimension())]
+        v = [uniform(0, 1) for _ in range(self.get_dimension())]
         self.set_vector(v)
 
     def zero(self):
@@ -130,6 +139,7 @@ class LieAlgebra(np.ndarray):
         """
         v = np.zeros(self.get_dimension())
         self.set_vector(v)
+
 
 class rn(LieAlgebra):
     r"""
@@ -155,7 +165,7 @@ class rn(LieAlgebra):
         return int(n-1)
 
     def get_vector(self):
-        return np.array(self[:-1,-1])
+        return np.array(self[:-1, -1])
 
     def set_vector(self, vector):
         vector = np.array(vector, dtype=np.float64)
@@ -164,11 +174,11 @@ class rn(LieAlgebra):
         if vlen != len(vector):
             raise ValueError
 
-        mat = np.zeros((n+1,n+1))
+        mat = np.zeros((n+1, n+1))
         for i in range(n):
             mat[i, -1] = vector[i]
 
-        self.data = mat
+        np.copyto(self, mat)
 
 
 class so(LieAlgebra):
@@ -210,14 +220,14 @@ class so(LieAlgebra):
         if vlen != len(vector):
             raise ValueError
 
-        mat = np.zeros((n,n))
+        mat = np.zeros((n, n))
         k = 0
         for i in range(n-1, 0, -1):
             for j in range(n, i, -1):
-                mat[i-1,j-1] = (-1)**(i+j)*vector[k]
+                mat[i-1, j-1] = (-1)**(i+j)*vector[k]
                 k += 1
 
-        self.data = mat - mat.T
+        np.copyto(self, mat - mat.T)
 
 
 class sp(LieAlgebra):
@@ -262,7 +272,7 @@ class sp(LieAlgebra):
         s = int(d/2)
         k = 0
         out = np.zeros(self.get_dimension())
-        A = self[:s,:s]
+        A = self[:s, :s]
         B = self[:s, s:2*s]
         C = self[s:2*s, :s]
         for ii in range(s):
@@ -285,9 +295,9 @@ class sp(LieAlgebra):
         d = self.get_shape()
         s = int(d/2)
         k = 0
-        A = np.zeros((s,s))
-        B = np.zeros((s,s))
-        C = np.zeros((s,s))
+        A = np.zeros((s, s))
+        B = np.zeros((s, s))
+        C = np.zeros((s, s))
         for ii in range(s):
             for jj in range(s):
                 A[ii, jj] = vector[k]
@@ -306,4 +316,5 @@ class sp(LieAlgebra):
         C = C + C.T - np.diag(C.diagonal())
         top = np.hstack((A, B))
         bot = np.hstack((C, -A.T))
-        self.data = np.vstack((top, bot))
+
+        np.copyto(self, np.vstack((top, bot)))

@@ -1,5 +1,5 @@
-from .liealgebras import *
-from .liegroups import *
+from .domain.liealgebras import *
+from .domain.liegroups import *
 # from liepack.hspaces import *
 
 from scipy.linalg import expm as scipyexpm
@@ -55,7 +55,8 @@ def Adjoint(G, h):
     :param h: A Lie algebra element.
     :return: :math:`\text{Ad}_g(h)`
     """
-    return np.dot(np.dot(G, h), np.linalg.inv(G))
+    g = group2algebra(G)
+    return g(G.get_shape(), np.dot(np.dot(G, h), np.linalg.inv(G)))
 
 
 def commutator(g, h, **kwargs):
@@ -82,8 +83,8 @@ def commutator(g, h, **kwargs):
 
     Construct the set of commutation relations in :math:`so(3)`.
 
-    >>> from liepack.liealgebras import so
-    >>> from liepack import commutator
+    >>> from beluga.liepack.domain.liealgebras import so
+    >>> from beluga.liepack import commutator
     >>> x = so(3)
     >>> y = so(3)
     >>> z = so(3)
@@ -92,17 +93,10 @@ def commutator(g, h, **kwargs):
     >>> z.set_vector([0,0,1])
     >>> Commutator(x,y) == z
     True
-
-    Use the commutator to "preload" the adjoint map, :math:`ad_g : \mathfrak{g} \rightarrow \mathfrak{g}`.
-
-    >>> adg = commutator(x)
-    >>> adg(y) == z
-    True
-    >>> adg(z) == -y
-    True
     """
     anticommutator = kwargs.get('anticommutator', 1)
-    return np.dot(g, h) - anticommutator * np.dot(h, g)
+    return np.dot(g, h) - anticommutator*np.dot(h, g)
+
 
 def dexpinv(g, h, order=5):
     r"""
@@ -114,11 +108,14 @@ def dexpinv(g, h, order=5):
     Evaluates the map by the following formula:
 
     .. math::
-        dexp_g^{-1}(h) = h - \frac{1}{2}[g,h] + \frac{B_2}{2!}[g,[g,h]] + \cdots = \sum_{k=0}^{\text{order}} \frac{B_k}{k!}\text{ad}_g^k(h)
+        dexp_g^{-1}(h) = h - \frac{1}{2}[g,h] + \frac{B_2}{2!}[g,[g,h]] + \cdots = \sum_{k=0}^{\text{order}}
+         \frac{B_k}{k!}\text{ad}_g^k(h)
 
     where :math:`B_k` are the :math:`k`-th Bernioulli numbers. The infinite series is truncated at `order`.
 
     :param g: Element of a Lie algebra.
+    :param h:
+    :param order:
     :return:
 
     +------------------------+-----------------+-----------------+
@@ -136,20 +133,21 @@ def dexpinv(g, h, order=5):
 
     B = bernoulli(order)
 
-    def adg(e): return commutator(g, e)
+    def adg(e):
+        return commutator(g, e)
 
     k = 0
     stack = h
-    out = B(k)*h
+    out = B[k] * h
 
     k = 1
     stack = adg(stack)
-    out += B(k)*stack
+    out += B[k] * stack
     k += 1
 
     while k < order:
         stack = adg(stack)
-        out += B(k)/factorial(k)*stack
+        out += B[k] / factorial(k) * stack
         k += 2
 
     return out
@@ -169,12 +167,12 @@ def exp(g):
     :return: Lie group element, :math:`G`.
     """
     if isinstance(g, LieAlgebra):
-        return algebra2group(g)(g.shape[0], scipyexpm(g))
+        return algebra2group(g)(g.get_shape(), scipyexpm(g))
     else:
         return scipyexpm(g)
 
 
-def killing(g,h):
+def killing(g, h):
     r"""
     Determine the Killing coefficient between two elements in a Lie algebra.
 

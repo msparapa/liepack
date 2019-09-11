@@ -1,3 +1,3 @@
 from .liepack import (Adjoint, commutator, dexpinv, exp, killing)
-from .liealgebras import *
-from .liegroups import *
+from .liepack import (algebra2group, group2algebra)
+from liepack.release import __version__

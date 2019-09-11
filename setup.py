@@ -1,5 +1,8 @@
 from setuptools import setup
-import os
+import os, sys
+
+if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 4):
+    raise RuntimeError("Python version 2.7 or >= 3.4 required.")
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -9,11 +12,16 @@ dir_setup = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(dir_setup, 'liepack', 'release.py')) as f:
     exec(f.read())
 
-modules = ['liepack.liealgebras',
-           'liepack.liegroups']
+modules = ['liepack.domain',
+           'liepack.domain.hspaces',
+           'liepack.domain.liealgebras',
+           'liepack.domain.liegroups',
+           'liepack.field',
+           'liepack.field']
 
-tests = ['liepack.liealgebras.tests',
-         'liepack.liegroups.tests']
+tests = ['liepack.tests',
+         'liepack.domain.liealgebras.tests',
+         'liepack.domain.liegroups.tests']
 
 setup(
     name='liepack',
@@ -26,13 +34,17 @@ setup(
     url='https://github.com/msparapa/liepack',
     packages=['liepack'] + modules + tests,
     py_modules=['liepack'],
+    python_requires='>2.7,!=3.0,!=3.1,!=3.2,!=3.3',
     classifiers=(
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
