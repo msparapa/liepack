@@ -23,7 +23,8 @@ modules = ['liepack.domain',
 
 tests = ['liepack.tests',
          'liepack.domain.liealgebras.tests',
-         'liepack.domain.liegroups.tests']
+         'liepack.domain.liegroups.tests',
+         'liepack.flow.tests']
 
 setup(
     name='liepack',
