@@ -1,9 +1,6 @@
 from setuptools import setup
 import os, sys
 
-if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 4):
-    raise RuntimeError("Python version 2.7 or >= 3.4 required.")
-
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
